@@ -63,6 +63,12 @@ export const System: FC<IProps> = ({ children }: IProps): JSX.Element => {
         style={{
           padding: "0 16px",
           background: constants.black,
+          position: 'sticky',
+          top: 0,
+          zIndex: 2,
+          width: '100%',
+          display: 'flex',
+          alignItems: 'center',
         }}
       >
         <Row gutter={[ 16, 16 ]}>
@@ -102,7 +108,7 @@ export const System: FC<IProps> = ({ children }: IProps): JSX.Element => {
           </Col>
         </Row>
       </Header>
-      <Layout style={{ maxHeight: "100vh" }}>
+      <Layout style={{ maxHeight: "100vh", overflowY: "auto", height: '100%' }}>
         {children}
       </Layout>
     </Layout>
