@@ -30,7 +30,7 @@ export const Home: FC<IProps> = (): JSX.Element => {
     <SystemLayout>
       <Row>
         <Col span={6}>
-          <div style={{ padding: "0 16px", maxheight: "100vh", overflowY: "auto", background: constants.light }}>
+          <div style={{ padding: "0 16px", maxHeight: 'calc(100vh - 64px)', overflowY: "auto", background: constants.light }}>
             {groups.map(group =>
               <>
                 <Title level={4}>
@@ -51,7 +51,7 @@ export const Home: FC<IProps> = (): JSX.Element => {
           </div>
         </Col>
         <Col span={18} tabIndex="map">
-          <div style={{ height: "100vh", overflowY: "auto", background: constants.light }}>
+          <div style={{ height: 'calc(100vh - 64px)', overflowY: "auto", background: constants.light }}>
             <MapContainer
               center={[ 50.45, 30.52 ]}
               // maxBounds={[ [ 50.156534, 31.138470 ], [ 50.959162, 29.471295 ] ]}
@@ -64,7 +64,7 @@ export const Home: FC<IProps> = (): JSX.Element => {
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               />
               <Routing/>
-              {/*<LocationMarker />*/}
+              <LocationMarker />
             </MapContainer>
           </div>
         </Col>

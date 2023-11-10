@@ -12,6 +12,7 @@ export const Router: FC<IProps> = (): JSX.Element => {
         <Route path="/" element={<Page.Home />} />
         <Route path="/sign-in" element={<Page.SignIn />} />
         <Route path="/sign-up" element={<Page.SignUp />} />
+        <Route path="/profile" element={<Page.Profile />} />
         <Route path="*" element={<Page.NotFound />} />
       </Routes>
     </HashRouter>

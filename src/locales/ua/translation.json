@@ -3,11 +3,19 @@
     "header": {
       "navigation": {
         "signIn": "Авторизація",
-        "signUp": "Реєстрація"
+        "signUp": "Реєстрація",
+        "backHome": "Назад"
       }
     },
     "home": {
       "title": "Привіт світ!"
+    },
+    "account": {
+      "title": "Інформація профілю",
+      "description": "Додайте або змініть свою особисту інформацію",
+      "fistName:": "Ім'я",
+      "lastName": "Прізвище",
+      "save": "Зберегти зміни"
     },
     "signIn": {
       "email": {

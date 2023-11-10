@@ -2,10 +2,13 @@ import { FC } from "react";
 import { Link } from "react-router-dom";
 import { useApi, useAuthorization } from "../../hooks";
 import { System as SystemLayout } from "../../layouts";
-import { Button, Checkbox, Form, Input } from "antd";
+import {Button, Checkbox, Flex, Form, Input} from "antd";
 import Title from "antd/es/typography/Title";
 import { LockOutlined, MailOutlined, UserOutlined } from "@ant-design/icons";
 import { useTranslation } from "react-i18next";
+import {AuthLayout} from "../../layouts/AuthLayout";
+import {Logo} from "../../components/Logo";
+import {constants} from "../../styles/constants";
 
 interface IProps {}
 
@@ -25,85 +28,74 @@ export const SignUp: FC<IProps> = (): JSX.Element => {
     });
   };
 
-  return !isAuthorized ? (
-    <SystemLayout>
-      <Form
-        name="register"
-        initialValues={{ remember: true }}
-        onFinish={onFinish}
-        autoComplete="off"
-      >
-        <Form.Item
-          name="fullname"
-          rules={[ { required: true, message: t("signUp.fullname.validation.required"), whitespace: true } ]}
+  // return !isAuthorized ? (
+  return isAuthorized ? (
+    <AuthLayout>
+      <Flex vertical align={"center"} justify="center" style={{height: "100vh"}} gap={14}>
+      <Logo width={200} height={200}/>
+      <Title level={3}>{t("header.navigation.signUp")}</Title>
+        <Form
+          name="register"
+          initialValues={{ remember: true }}
+          onFinish={onFinish}
+          autoComplete="off"
         >
-          <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder={t("signUp.fullname.title")} />
-        </Form.Item>
-        <Form.Item
-          name="email"
-          rules={[
-            { type: "email", message: t("signUp.email.validation.email") },
-            { required: true, message: t("signUp.email.validation.required") },
-          ]}
-        >
-          <Input prefix={<MailOutlined className="site-form-item-icon" />} placeholder={t("signUp.email.title")} />
-        </Form.Item>
-        <Form.Item
-          name="password"
-          hasFeedback
-          rules={[ { required: true, message: t("signUp.password.validation.required") } ]}
-        >
-          <Input.Password
-            prefix={<LockOutlined className="site-form-item-icon" />}
-            placeholder={t("signUp.password.title")}
-          />
-        </Form.Item>
+          <Form.Item
+            name="fullname"
+            rules={[ { required: true, message: t("signUp.fullname.validation.required"), whitespace: true } ]}
+          >
+            <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder={t("signUp.fullname.title")} />
+          </Form.Item>
+          <Form.Item
+            name="email"
+            rules={[
+              { type: "email", message: t("signUp.email.validation.email") },
+              { required: true, message: t("signUp.email.validation.required") },
+            ]}
+          >
+            <Input prefix={<MailOutlined className="site-form-item-icon" />} placeholder={t("signUp.email.title")} />
+          </Form.Item>
+          <Form.Item
+            name="password"
+            hasFeedback
+            rules={[ { required: true, message: t("signUp.password.validation.required") } ]}
+          >
+            <Input.Password
+              prefix={<LockOutlined className="site-form-item-icon" />}
+              placeholder={t("signUp.password.title")}
+            />
+          </Form.Item>
 
-        <Form.Item
-          name="confirm"
-          dependencies={[ "password" ]}
-          hasFeedback
-          rules={[
-            { required: true, message: t("signUp.confirm.validation.required") },
-            ({ getFieldValue }) => ({
-              validator(_, value) {
-                if (!value || getFieldValue("password") === value) {
-                  return Promise.resolve();
-                }
-                return Promise.reject(new Error(t("signUp.confirm.validation.noMatch")));
-              },
-            }),
-          ]}
-        >
-          <Input.Password
-            prefix={<LockOutlined className="site-form-item-icon" />}
-            placeholder={t("signUp.confirm.title")}
-          />
-        </Form.Item>
+          <Form.Item
+            name="confirm"
+            dependencies={[ "password" ]}
+            hasFeedback
+            rules={[
+              { required: true, message: t("signUp.confirm.validation.required") },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  if (!value || getFieldValue("password") === value) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(new Error(t("signUp.confirm.validation.noMatch")));
+                },
+              }),
+            ]}
+          >
+            <Input.Password
+              prefix={<LockOutlined className="site-form-item-icon" />}
+              placeholder={t("signUp.confirm.title")}
+            />
+          </Form.Item>
 
-        <Form.Item
-          name="agreement"
-          valuePropName="checked"
-          rules={[
-            {
-              validator: (_, value) =>
-                value ? Promise.resolve() : Promise.reject(new Error(t("signUp.agreement.validation.required"))),
-            },
-          ]}
-        >
-          <Checkbox>
-            {t("signUp.agreement.title")}
-            <a href="">{t("signUp.agreement.linkText")}</a>
-          </Checkbox>
-        </Form.Item>
-
-        <Form.Item>
-          <Button type="primary" htmlType="submit">
-            {t("signUp.navigation.register")}
-          </Button>
-        </Form.Item>
-      </Form>
-    </SystemLayout>
+          <Form.Item>
+            <Button style={{width: "100%", background: constants.black}} type="primary" htmlType="submit">
+              {t("signUp.navigation.register")}
+            </Button>
+          </Form.Item>
+        </Form>
+      </Flex>
+    </AuthLayout>
   ) : (
     <SystemLayout>
       <Title>{t("signUp.authorized.title")}</Title>

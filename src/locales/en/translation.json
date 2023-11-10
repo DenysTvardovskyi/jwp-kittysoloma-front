@@ -3,11 +3,19 @@
     "header": {
       "navigation": {
         "signIn": "Log In",
-        "signUp": "Register"
+        "signUp": "Register",
+        "backHome": "Back home"
       }
     },
     "home": {
       "title": "Hello World!"
+    },
+    "account": {
+      "title": "Profile information",
+      "description": "Add or modify you personal information",
+      "fistName:": "First name",
+      "lastName": "Last name",
+      "save": "Save changes"
     },
     "signIn": {
       "email": {
