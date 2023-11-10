@@ -13,7 +13,7 @@
     "account": {
       "title": "Profile information",
       "description": "Add or modify you personal information",
-      "fistName:": "First name",
+      "firstName:": "First name",
       "lastName": "Last name",
       "save": "Save changes"
     },
@@ -47,10 +47,16 @@
       }
     },
     "signUp": {
-      "fullname": {
-        "title": "Full Name",
+      "firstName": {
+        "title": "First name",
         "validation": {
-          "required": "Please input your Full Name!"
+          "required": "Please input your First Name!"
+        }
+      },
+      "lastName": {
+        "title": "Last name",
+        "validation": {
+          "required": "Please input your Last Name!"
         }
       },
       "email": {

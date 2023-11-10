@@ -2,10 +2,10 @@ export interface IUser {
   id: number;
   avatarUrl?: string;
   email: string;
-  createdAt: string;
+  createdAt?: string;
   updatedAt?: string;
-  name: string;
+  firstName: string;
   lastName: string;
-  passwordHash: string;
+  passwordHash?: string;
   role: "ADMIN" | "SUPER_ADMIN" | "BASIC";
 }

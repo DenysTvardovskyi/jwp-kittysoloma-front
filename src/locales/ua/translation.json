@@ -47,8 +47,14 @@
       }
     },
     "signUp": {
-      "fullname": {
-        "title": "Ім'я та Прізвище",
+      "firstName": {
+        "title": "Ім'я",
+        "validation": {
+          "required": "Це поле є обов'язковим!"
+        }
+      },
+      "lastName": {
+        "title": "Прізвище",
         "validation": {
           "required": "Це поле є обов'язковим!"
         }

@@ -13,12 +13,13 @@ interface IApiConfig {
 
 interface IApiAuthorizationSignUpConfig extends IApiConfig {
   email: string;
-  fullname: string;
+  firstName: string;
+  lastName: string;
   password: string;
 }
 
 interface IApiAuthorizationSignInConfig extends IApiConfig {
-  username: string;
+  email: string;
   password: string;
 }
 
@@ -29,7 +30,7 @@ interface IApiAccountGetConfig extends IApiConfig {}
 export interface IUseApi {
   authorization: {
     signUp: (config: IApiAuthorizationSignUpConfig) => Promise<void>;
-    signIn: (config: IApiAuthorizationSignInConfig) => Promise<{ accessToken: string, tokenType: string, user: IUser }>;
+    signIn: (config: IApiAuthorizationSignInConfig) => Promise<{ accessToken: string, user: IUser }>;
     signOut: (config: IApiAuthorizationSignOutConfig) => Promise<void>;
   };
   account: {
@@ -41,64 +42,51 @@ type TUseApi = () => IUseApi;
 
 export const useApi: TUseApi = (): IUseApi => {
   const http = useHTTP();
-  const { isAuthorized, accessToken, tokenType } = useAuthorization();
+  const { isAuthorized, accessToken } = useAuthorization();
 
   const headers: AxiosRequestHeaders = useMemo<AxiosRequestHeaders>(() => {
     const _headers: any = {};
 
     if (isAuthorized) {
-      _headers["Authorization"] = `${tokenType} ${accessToken}`;
+      _headers["Authorization"] = `Bearer ${accessToken}`;
     }
 
     _headers["Access-Control-Allow-Origin"] = "*";
     _headers["Content-Type"] = "application/json";
 
     return _headers;
-  }, [ isAuthorized, accessToken, tokenType ]);
+  }, [ isAuthorized, accessToken ]);
 
   return {
     authorization: {
-      signUp: ({ email, fullname, debug, password, loader }) => {
+      signUp: ({ email, lastName, firstName, debug, password, loader }) => {
         const body = {
           email: email,
-          fullname: fullname,
+          firstName: firstName,
+          lastName: lastName,
           password: password,
         };
         return http.request<void>({
           method: "POST",
-          url: `${API_URL}/account/register`,
+          url: `${API_URL}/users/register`,
           headers,
           data: body,
           debug,
           loader: !!loader ? loader : "Processing sign up...",
         });
       },
-      signIn: ({ loader, debug, password, username }) => {
-        return new Promise((resolve, reject) => {
-          const formData = new FormData();
 
-          formData.append("username", username);
-          formData.append("password", password);
-
-          http.request<{ access_token: string, token_type: string, account: IUser }>({
-            method: "POST",
-            url: `${API_URL}/account/login`,
-            headers: { "Content-Type": "multipart/form-data" },
-            data: formData,
-            loader: !!loader ? loader : "Processing sign in...",
-            debug,
-          })
-            .then((data) => {
-              const { access_token, token_type, account } = data;
-
-              return resolve({
-                accessToken: access_token,
-                tokenType: token_type,
-                user: account,
-              });
-            })
-            .catch(reject);
-        });
+      signIn: ({ loader, debug, password, email }) => {
+        return http.request<{ accessToken: string, user: IUser }>({
+          method: "POST",
+          url: `${API_URL}/users/login`,
+          headers,
+          data: {
+            password,
+            email,
+          },
+          loader: !!loader ? loader : false,
+        })
       },
       signOut: ({ loader }) => {
         return http.request<void>({

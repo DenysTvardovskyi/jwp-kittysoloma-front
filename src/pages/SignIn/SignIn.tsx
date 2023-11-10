@@ -17,16 +17,16 @@ export const SignIn: FC<IProps> = (): JSX.Element => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { isAuthorized, setAuthorization } = useAuthorization();
+
   const onFinish = (values: any) => {
-    api.authorization.signIn({ username: values.username, password: values.password, loader: t("signIn.loader.title") })
-      .then(({ accessToken, tokenType, user }) => {
-        setAuthorization(accessToken, tokenType, user);
+    api.authorization.signIn({ email: values.email, password: values.password, loader: t("signIn.loader.title") })
+      .then(({ accessToken, user }) => {
+        setAuthorization(accessToken, user);
         navigate("/");
       });
   };
 
-  // return !isAuthorized ? (
-  return isAuthorized ? (
+  return !isAuthorized ? (
     <AuthLayout>
         <Flex vertical align={"center"} justify="center" style={{height: "100vh"}} gap={14}>
             <Logo width={200} height={200}/>
@@ -69,11 +69,9 @@ export const SignIn: FC<IProps> = (): JSX.Element => {
                         </Button>
                         <Link style={{color: constants.black}} to="/sign-up">{t("signIn.navigation.register")}</Link>
                     </Flex>
-
                 </Form.Item>
             </Form>
         </Flex>
-
     </AuthLayout>
   ) : (
     <SystemLayout main={{ className: "d-flex justify-content-center" }}>

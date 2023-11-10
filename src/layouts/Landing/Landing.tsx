@@ -1,7 +1,7 @@
 import React, { FC } from "react";
 import {Content, Header} from "antd/es/layout/layout";
 import {constants} from "../../styles/constants";
-import {Col, Flex, Layout, Row, Select} from "antd";
+import {Button, Col, Flex, Layout, Row, Select} from "antd";
 import {Link} from "react-router-dom";
 import {Logo} from "../../components/Logo";
 import Text from "antd/es/typography/Text";
@@ -9,13 +9,15 @@ import i18n from "i18next";
 import {useAuthorization} from "../../hooks";
 import {UserAvatar} from "../../components/UserAvatar";
 import {LanguageChange} from "../../components/LanguageChange";
+import {LogoutOutlined} from "@mui/icons-material";
 
 interface IProps {
   children?: React.ReactNode | React.ReactNode[];
 }
 
 export const Landing: FC<IProps> = ({ children }: IProps): JSX.Element => {
-    const {user} = useAuthorization()
+    const {user, resetAuthorization} = useAuthorization()
+
       return (
           <Layout>
               <Header
@@ -48,6 +50,7 @@ export const Landing: FC<IProps> = ({ children }: IProps): JSX.Element => {
                           <Flex align="center" gap={16} justify={"flex-end"} style={{ height: "100%" }}>
                               <LanguageChange/>
                               <UserAvatar user={user}/>
+                              <Button onClick={() => resetAuthorization()}><LogoutOutlined /></Button>
                           </Flex>
                       </Col>
                   </Row>

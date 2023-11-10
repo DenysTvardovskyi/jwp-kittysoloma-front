@@ -5,10 +5,9 @@ import {Link, useNavigate} from "react-router-dom";
 import Title from "antd/es/typography/Title";
 import Text from "antd/es/typography/Text";
 import {Button, Card, Checkbox, Col, Divider, Flex, Form, Input, Row, Upload, UploadProps} from "antd";
-import {LockOutlined, MailOutlined, RestOutlined} from "@ant-design/icons";
+import {RestOutlined} from "@ant-design/icons";
 import {constants} from "../../styles/constants";
 import {useTranslation} from "react-i18next";
-import {UserAvatar} from "../../components/UserAvatar";
 import {UploadOutlined} from "@mui/icons-material";
 import {mock} from "../Home/mock";
 import {MapItem} from "../Home/components/MapItem";
@@ -44,11 +43,11 @@ export const Profile: FC<IProps> = (): JSX.Element => {
     const {t} = useTranslation()
     const navigate = useNavigate()
 
-    useEffect(() => {
-        if (!isAuthorized) {
-            navigate("/signIn")
-        }
-    }, [isAuthorized])
+    // useEffect(() => {
+    //     if (!isAuthorized) {
+    //         navigate("/sign-in")
+    //     }
+    // }, [isAuthorized, user])
 
     return (
         <LandingLayout>
@@ -71,7 +70,7 @@ export const Profile: FC<IProps> = (): JSX.Element => {
                                     </Button>
                                 </Upload>
                             </Card>
-                            <Form.Item name="name">
+                            <Form.Item name="firstName">
                                 <Input placeholder={t("account.firstName")}/>
                             </Form.Item>
                             <Form.Item name="lastName">

@@ -19,7 +19,8 @@ export const SignUp: FC<IProps> = (): JSX.Element => {
 
   const onFinish = (values: any) => {
     api.authorization.signUp({
-      fullname: values.fullname,
+      firstName: values.firstName,
+      lastName:  values.lastName,
       password: values.password,
       email: values.email,
       loader: t("loader.loader.title"),
@@ -28,8 +29,8 @@ export const SignUp: FC<IProps> = (): JSX.Element => {
     });
   };
 
-  // return !isAuthorized ? (
-  return isAuthorized ? (
+  return !isAuthorized ? (
+  // return isAuthorized ? (
     <AuthLayout>
       <Flex vertical align={"center"} justify="center" style={{height: "100vh"}} gap={14}>
       <Logo width={200} height={200}/>
@@ -41,10 +42,16 @@ export const SignUp: FC<IProps> = (): JSX.Element => {
           autoComplete="off"
         >
           <Form.Item
-            name="fullname"
-            rules={[ { required: true, message: t("signUp.fullname.validation.required"), whitespace: true } ]}
+              name="firstName"
+              rules={[ { required: true, message: t("signUp.firstName.validation.required"), whitespace: true } ]}
           >
-            <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder={t("signUp.fullname.title")} />
+            <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder={t("signUp.firstName.title")} />
+          </Form.Item>
+          <Form.Item
+            name="lastName"
+            rules={[ { required: true, message: t("signUp.lastName.validation.required"), whitespace: true } ]}
+          >
+            <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder={t("signUp.lastName.title")} />
           </Form.Item>
           <Form.Item
             name="email"
@@ -71,7 +78,7 @@ export const SignUp: FC<IProps> = (): JSX.Element => {
             dependencies={[ "password" ]}
             hasFeedback
             rules={[
-              { required: true, message: t("signUp.confirm.validation.required") },
+              { required: true, message: t("signUp.confirm.validation.noMatch") },
               ({ getFieldValue }) => ({
                 validator(_, value) {
                   if (!value || getFieldValue("password") === value) {
@@ -97,9 +104,13 @@ export const SignUp: FC<IProps> = (): JSX.Element => {
       </Flex>
     </AuthLayout>
   ) : (
-    <SystemLayout>
-      <Title>{t("signUp.authorized.title")}</Title>
-      <Link to="/">{t("signUp.authorized.goHome")}</Link>
-    </SystemLayout>
+    <AuthLayout>
+      <Flex vertical align={"center"} justify="center" style={{height: "100vh"}} gap={14}>
+        <Title>{t("signUp.authorized.title")}</Title>
+        <Button style={{background: constants.black, color: constants.white}}>
+          <Link to="/">{t("signUp.authorized.goHome")}</Link>
+        </Button>
+      </Flex>
+    </AuthLayout>
   );
 };

@@ -1,16 +1,15 @@
 import React, { FC, useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuthorization } from "../../hooks";
 import { Col, Flex, Layout, Menu, MenuProps, Row, Select } from "antd";
 import { constants } from "../../styles/constants";
 import { Content, Header } from "antd/es/layout/layout";
-import i18n from "i18next";
 import Search from "antd/es/input/Search";
 import Text from "antd/es/typography/Text";
 import {Logo} from "../../components/Logo";
 import {UserAvatar} from "../../components/UserAvatar";
 import {LanguageChange} from "../../components/LanguageChange";
+import {LoginOutlined} from "@mui/icons-material";
 
 
 interface IProps {
@@ -28,7 +27,8 @@ export const System: FC<IProps> = ({ children }: IProps): JSX.Element => {
   const { resetAuthorization } = useAuthorization();
   const [ collapsed, setCollapsed ] = useState(false);
   const [ hasBreakPoint, setBreakPoint ] = useState(false);
-  const { user } = useAuthorization();
+  const { user, isAuthorized } = useAuthorization();
+    console.log(user, isAuthorized)
 
   return (
     <Layout>
@@ -70,9 +70,13 @@ export const System: FC<IProps> = ({ children }: IProps): JSX.Element => {
             </Flex>
           </Col>
           <Col span={7}>
-            <Flex align="center" gap={16} justify={"flex-end"} style={{ height: "100%" }}>
-              <LanguageChange/>
-              <UserAvatar user={user}/>
+            <Flex align="center" gap={16} justify={"flex-end"}  style={{ height: "100%" }}>
+                <LanguageChange/>
+                {isAuthorized
+                    ? <UserAvatar user={user}/>
+                    : <Link style={{display: "flex", alignItems: "center"}} to={"sign-in"}>
+                        <LoginOutlined style={{color: constants.white}}/></Link>
+                }
             </Flex>
           </Col>
         </Row>
