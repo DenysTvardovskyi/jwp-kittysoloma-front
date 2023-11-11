@@ -246,11 +246,11 @@ export const Home: FC<IProps> = (): JSX.Element => {
         >
           <Title level={2} style={{ marginBottom: 0 }}>Пошук</Title>
           <Input
-              placeholder="large size"
-              style={{ marginTop: 24 }}
-              prefix={<AimOutlined />}
-              disabled={true}
-              value={t("home.location.placeholder")}
+            placeholder="large size"
+            style={{ marginTop: 24 }}
+            prefix={<AimOutlined />}
+            disabled={true}
+            value={t("home.location.placeholder")}
           />
           <Search
             placeholder={t("home.search.placeholder")}
@@ -261,11 +261,12 @@ export const Home: FC<IProps> = (): JSX.Element => {
           />
           <span>{t("home.search.results")}: {total}</span>
           <Title
-              style={{
-            marginTop: 10,
-          }} level={5}>{t("home.search.filters")}</Title>
-          <Flex gap={5} wrap={"wrap"} styles={{width: "100%"}}>
-            {tags.map((tag) => (
+            style={{
+              marginTop: 10,
+            }} level={5}
+          >{t("home.search.filters")}</Title>
+          <Flex gap={5} wrap={"wrap"} style={{ width: "100%" }}>
+            {tags.map((tag: any) => (
               <CheckableTag
                 style={{ border: "1px solid black", fontSize: 14 }}
                 key={tag.label}
@@ -426,10 +427,10 @@ function PlaceMarker({ latlng, name, air, tags }: { latlng: ILatlng, name: strin
   }, []);
 
   return !position ? null : (
-    <Marker position={position} style={{width: 200}}>
+    <Marker position={position}>
       <Popup>
         <Title level={4}>{name}</Title>
-        <Flex vertical gap={10} style={{ marginTop: 12 }}>
+        <Flex vertical gap={10} style={{ marginTop: 12, minWidth: "200px" }}>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr" }}>
             <span style={{ textTransform: "capitalize" }}>Air</span>
             <span style={{ textTransform: "capitalize" }}>{air}</span>
