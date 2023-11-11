@@ -37,6 +37,7 @@ interface INode {
   airQualityCategory: string,
   lat: number,
   lng: number
+  tags: any[]
 }
 
 export const Home: FC<IProps> = (): JSX.Element => {
@@ -88,6 +89,7 @@ export const Home: FC<IProps> = (): JSX.Element => {
         airQualityCategory,
         lng: node.location.coordinates[0],
         lat: node.location.coordinates[1],
+        tags: node.tags
       });
       if (hasBreakPoint) {
         //@ts-ignore
@@ -342,6 +344,7 @@ export const Home: FC<IProps> = (): JSX.Element => {
             {selectedMapItem && !nodeIsLoading && <PlaceMarker
               name={selectedMapItem.name}
               air={selectedMapItem.airQualityCategory}
+              tags={selectedMapItem.tags}
               latlng={{ lng: selectedMapItem.lng, lat: selectedMapItem.lat }}
             />}
             <LocationMarker trigger={showLocation} setShowLocation={setShowLocation} setUserLatlon={setUserLatlon} />
@@ -408,10 +411,11 @@ function LocationMarker({ trigger, setUserLatlon }: any) {
   );
 }
 
-function PlaceMarker({ latlng, name, air }: { latlng: ILatlng, name: string, air: string }) {
+function PlaceMarker({ latlng, name, air, tags }: { latlng: ILatlng, name: string, air: string, tags: any[] }) {
   const [ position, setPosition ] = useState<ILatlng>();
 
   const map = useMap();
+
 
   useEffect(() => {
     map.locate().on("locationfound", function() {
@@ -423,10 +427,23 @@ function PlaceMarker({ latlng, name, air }: { latlng: ILatlng, name: string, air
   return !position ? null : (
     <Marker position={position}>
       <Popup>
-        <strong>{name}</strong>
-        <br />
-        Air: {air}
-        <br />
+        <Title level={4}>{name}</Title>
+        <Flex vertical gap={10} style={{marginTop: 12}}>
+          <div style={{display: "grid", gridTemplateColumns: "1fr 1fr" }}>
+            <span style={{textTransform: "capitalize"}}>Air</span>
+            <span style={{textTransform: "capitalize"}} >{air}</span>
+          </div>
+          {tags.filter((tag) => !tag.name.includes("name")).map((tag) => {
+              return (
+                  <div style={{display: "grid", gridTemplateColumns: "1fr 1fr" }} key={tag.name}>
+                    <span style={{textTransform: "capitalize"}}>{tag.name.split("_").join(" ")}</span>
+                    <span style={{overflow:"hidden", textOverflow: "ellipsis"}} >{tag.value}</span>
+                  </div>
+              )
+            })
+          }
+        </Flex>
+
       </Popup>
     </Marker>
   );
