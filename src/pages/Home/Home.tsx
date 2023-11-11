@@ -1,8 +1,8 @@
-import React, { FC, useEffect, useRef, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import { System as SystemLayout } from "../../layouts";
 import { useTranslation } from "react-i18next";
 import "leaflet/dist/leaflet.css";
-import { Button, FloatButton, Image, Input, Layout, List, Modal, Select, Tour, TourProps } from "antd";
+import { Button, FloatButton, Image, Input, Layout, List, Modal, Select, Tour } from "antd";
 import { constants } from "../../styles/constants";
 import { MapItem } from "./components/MapItem";
 import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
@@ -11,6 +11,7 @@ import "leaflet-routing-machine";
 import "leaflet-control-geocoder/dist/Control.Geocoder.css";
 import "leaflet-control-geocoder/dist/Control.Geocoder.js";
 import { AimOutlined } from "@ant-design/icons";
+//@ts-ignore
 import L from "leaflet";
 import Sider from "antd/es/layout/Sider";
 import Search from "antd/es/input/Search";
@@ -35,24 +36,26 @@ interface INode {
 }
 
 export const Home: FC<IProps> = (): JSX.Element => {
+  //@ts-ignore
   const { t } = useTranslation();
   const [ hasBreakPoint, setBreakPoint ] = useState(false);
 
   const { opened, setOpened } = usePanel();
 
-  const [ total, setTotal ] = useState<number>();
+  const [ total, setTotal ] = useState<number>(0);
   const [ search, setSearch ] = useState<string>("");
   const [ executeSearch, { data, loading } ] = useLazyQuery(PLACES);
   const [ userLatlon, setUserLatlon ] = useState(null);
+  const [ end, setEnd ] = useState(null);
   const panelWidth = hasBreakPoint && !opened ? "100%" : "35%";
 
   const [ showLocation, setShowLocation ] = useState(false);
   const [ isModalOpen, setIsModalOpen ] = useState(false);
   const [ tour, setTour ] = useState(false);
 
-  const ref1 = useRef(null);
-  const ref2 = useRef(null);
-  const ref3 = useRef(null);
+  const ref1 = useRef<any>(null);
+  const ref2 = useRef<HTMLButtonElement | null>(null);
+  const ref3 = useRef<HTMLDivElement | null>(null);
 
   const [ params, setParams ] = useState<any>({
     pagination: {
@@ -60,6 +63,9 @@ export const Home: FC<IProps> = (): JSX.Element => {
       offset: null,
     },
   });
+
+  const [ selectedMapItem, setSelectedMapItem ] = useState<INode>();
+  const [ executeNodeData, { loading: nodeIsLoading } ] = useLazyQuery(NODE_BY_ID);
 
   useEffect(() => {
     const tourState = localStorage.getItem("tourDone");
@@ -87,13 +93,14 @@ export const Home: FC<IProps> = (): JSX.Element => {
     });
   }, [ params, search ]);
 
-  const [ selectedMapItem, setSelectedMapItem ] = useState<INode>();
-  const [ executeNodeData, { loading: nodeIsLoading } ] = useLazyQuery(NODE_BY_ID);
-
   const handleNodeClick = (id: number) => {
     executeNodeData({ variables: { id } }).then(r => {
       const node = r.data.nodeById;
-      const name = node.tags.find(tag => tag.name === "name" || tag.name === "name:uk");
+      const name = node.tags.find((tag: any) => tag.name === "name" || tag.name === "name:uk");
+      setEnd({
+        lng: node.location.coordinates[0],
+        lat: node.location.coordinates[1],
+      } as any);
       setSelectedMapItem({
         name: name.value,
         airQualityCategory: node.airQualityCategory,
@@ -101,7 +108,8 @@ export const Home: FC<IProps> = (): JSX.Element => {
         lat: node.location.coordinates[1],
       });
       if (hasBreakPoint) {
-        setOpened(prev => !prev);
+        //@ts-ignore
+        setOpened((prev: any) => !prev);
       }
     });
 
@@ -116,7 +124,7 @@ export const Home: FC<IProps> = (): JSX.Element => {
           navigator.geolocation.getCurrentPosition((position) => setUserLatlon({
             lat: position.coords.latitude,
             lng: position.coords.longitude,
-          }), () => "");
+          } as any), () => "");
         }
       });
     } else {
@@ -124,7 +132,7 @@ export const Home: FC<IProps> = (): JSX.Element => {
     }
   }
 
-  const steps: TourProps["steps"] = [
+  const steps: any = [
     {
       title: "Welcome to MAP",
       description: "Let's have a quick look around.",
@@ -211,9 +219,10 @@ export const Home: FC<IProps> = (): JSX.Element => {
             onSearch={handleSearch}
             style={{ margin: "24px 0" }}
           />
+          <span>Results: {total}</span>
           <List>
             {!loading && data &&
-              data?.pagedNodes?.nodes?.map(node =>
+              data?.pagedNodes?.nodes?.map((node: any) =>
                 <List.Item
                   onClick={() => handleNodeClick(node.id)}
                   style={{ width: "100%" }} key={node.id}
@@ -242,7 +251,7 @@ export const Home: FC<IProps> = (): JSX.Element => {
             >Next</Button>
             <Select
               style={{ width: 120 }}
-              onChange={(value, option) => {
+              onChange={(value) => {
                 setParams({ ...params, pagination: { pageSize: +value, offset: null } });
               }}
               value={params.pagination.pageSize}
@@ -262,17 +271,20 @@ export const Home: FC<IProps> = (): JSX.Element => {
           ref={ref1}
         >
           <MapContainer
+            //@ts-ignore
             center={[ 50.45, 30.52 ]}
             // maxBounds={[ [ 50.156534, 31.138470 ], [ 50.959162, 29.471295 ] ]}
-            minZoom={8}
+            minZoom={10}
             maxZoom={18}
             zoom={16}
           >
             <TileLayer
+              //@ts-ignore
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              //@ts-ignore
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            {userLatlon && <Routing start={userLatlon} end={[ 50.156534, 31.138470 ]} />}
+            {userLatlon && end && <Routing start={userLatlon} end={end} />}
             {selectedMapItem && !nodeIsLoading && <PlaceMarker
               name={selectedMapItem.name}
               air={selectedMapItem.airQualityCategory}
@@ -297,7 +309,7 @@ L.Marker.prototype.options.icon = L.icon({
   iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
 });
 
-const Routing = ({ start, end }) => {
+const Routing = ({ start, end }: any) => {
   const map = useMap();
 
   useEffect(() => {
@@ -312,34 +324,26 @@ const Routing = ({ start, end }) => {
     }).addTo(map);
 
     return () => map.removeControl(routingControl);
-  }, [ map ]);
+  }, [ map, start, end ]);
 
   return null;
 };
 
-interface IMarkerProps {
-  name: string,
-  air: string
-  latlng: ILatlng,
-}
-
-function LocationMarker({ trigger, setShowLocation, setUserLatlon }) {
+function LocationMarker({ trigger, setUserLatlon }: any) {
   const [ position, setPosition ] = useState(null);
-  const [ bbox, setBbox ] = useState([]);
 
   const map = useMap();
 
   useEffect(() => {
     if (trigger) {
-      map.locate().on("locationfound", function(e) {
+      map.locate().on("locationfound", function(e: any) {
         setUserLatlon(e.latlng);
         setPosition(e.latlng);
         map.flyTo(e.latlng, map.getZoom());
         const radius = e.accuracy;
         const circle = L.circle(e.latlng, radius);
         circle.addTo(map);
-        setBbox(e.bounds.toBBoxString().split(","));
-      }).on("locationerror", function(e) {
+      }).on("locationerror", function() {
         alert("Location access denied.");
       });
     }
@@ -350,13 +354,13 @@ function LocationMarker({ trigger, setShowLocation, setUserLatlon }) {
   );
 }
 
-function PlaceMarker({ latlng, name, air }: { latlng: ILatlng, name: string, air: number }) {
+function PlaceMarker({ latlng, name, air }: { latlng: ILatlng, name: string, air: string }) {
   const [ position, setPosition ] = useState<ILatlng>();
 
   const map = useMap();
 
   useEffect(() => {
-    map.locate().on("locationfound", function(e) {
+    map.locate().on("locationfound", function() {
       setPosition(latlng);
       map.flyTo(latlng, map.getZoom());
     });

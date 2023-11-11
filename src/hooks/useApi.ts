@@ -76,7 +76,7 @@ export const useApi: TUseApi = (): IUseApi => {
         });
       },
 
-      signIn: ({ loader, debug, password, email }) => {
+      signIn: ({ loader, password, email }) => {
         return http.request<{ accessToken: string, user: IUser }>({
           method: "POST",
           url: `${API_URL}/users/login`,
