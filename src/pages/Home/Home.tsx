@@ -3,12 +3,12 @@ import {System as SystemLayout} from "../../layouts";
 import {useTranslation} from "react-i18next";
 import "leaflet/dist/leaflet.css";
 import {mock} from "./mock";
-import {Col, Divider, Flex, Layout, Row} from "antd";
+import {Col, Divider, Flex, Layout, List, Row} from "antd";
 import {constants} from "../../styles/constants";
 import {MapItem} from "./components/MapItem";
 import {MapContainer, Marker, Popup, TileLayer, useMap} from "react-leaflet";
 import Title from "antd/es/typography/Title";
-import {RestOutlined} from "@ant-design/icons";
+import {LoadingOutlined} from "@ant-design/icons";
 import "leaflet-routing-machine/dist/leaflet-routing-machine.css";
 import "leaflet-routing-machine";
 import "leaflet-control-geocoder/dist/Control.Geocoder.css";
@@ -18,8 +18,23 @@ import L from "leaflet";
 import Sider from "antd/es/layout/Sider";
 import Search from "antd/es/input/Search";
 import {usePanel} from "../../hooks/usePanel";
+import {PLACES} from "../../graphql/places";
+import {useLazyQuery} from "@apollo/client";
+import {NODE_BY_ID} from "../../graphql/nodeByID";
 
 interface IProps {
+}
+
+interface ILatlng{
+    lat: number,
+    lng: number
+}
+
+interface INode{
+    name: string,
+    airQualityCategory: string,
+    lat: number,
+    lng: number
 }
 
 export const Home: FC<IProps> = (): JSX.Element => {
@@ -28,12 +43,59 @@ export const Home: FC<IProps> = (): JSX.Element => {
 
     const {opened, setOpened} = usePanel()
 
-    const groups = [
-        {amenity: "something", items: [mock[0], mock[1], mock[2], mock[3], mock[4], mock[5]]},
-        {amenity: "something-else", items: [mock[6], mock[7], mock[8], mock[9], mock[10], mock[11]]},
-    ];
+    const [ total, setTotal ] = useState<number>();
+    const [ search, setSearch ] = useState<string>("");
+    const [ executeSearch, { data, loading } ] = useLazyQuery(PLACES);
+    const [ params, setParams ] = useState<any>({
+        pagination: {
+            pageSize: 10,
+            offset: null,
+        },
+    });
 
-    const panelWidth = hasBreakPoint && !opened ? "100%" : 500
+    const [selectedMapItem, setSelectedMapItem] = useState<INode>()
+    const [ executeNodeData, {loading: nodeIsLoading} ] = useLazyQuery(NODE_BY_ID);
+
+    const handleNodeClick = (id: number) => {
+        executeNodeData({variables: {id}}).then(r => {
+            const node = r.data.nodeById
+            const name = node.tags.find(tag => tag.name === "name" || tag.name === "name:uk")
+            setSelectedMapItem({
+                name: name.value,
+                airQualityCategory: node.airQualityCategory,
+                lng: node.location.coordinates[0],
+                lat: node.location.coordinates[1]
+            })
+            if(hasBreakPoint){
+                setOpened(prev => !prev)
+            }
+        })
+
+    }
+
+    useEffect(() => {
+        const variables = {
+            search,
+            pageSize: params.pagination.pageSize,
+            offset: params.pagination.offset,
+        };
+
+        executeSearch({ variables }).then((res) => {
+            setTotal(res.data.pagedNodes.totalCount);
+        });
+    }, [ params, search ]);
+
+    const handleSearch = (v: string) => {
+        setSearch(v);
+        setParams({ ...params, pagination: { pageSize: 10 } });
+    };
+
+    const onPaginationChange = (page: number, pageSize: number): void => {
+        setParams({ ...params, pagination: { pageSize } });
+    };
+
+    const panelWidth = hasBreakPoint && !opened ? "100%" : "35%"
+
 
     return (
         <SystemLayout>
@@ -46,7 +108,7 @@ export const Home: FC<IProps> = (): JSX.Element => {
                 width={panelWidth}
                 onBreakpoint={(broken) => {
                     setOpened(broken);
-                  setBreakPoint(broken);
+                    setBreakPoint(broken);
                 }}
                 style={{
                   maxHeight: 'calc(100vh - 64px)',
@@ -62,28 +124,22 @@ export const Home: FC<IProps> = (): JSX.Element => {
                     placeholder="input search text"
                     allowClear
                     enterButton="Search"
-                    // onSearch={onSearch}
+                    onSearch={handleSearch}
                     style={{
-                      marginTop: 24
+                      marginTop: 24,
+                      marginBottom: 24
                     }}
                 />
-                {groups.map(group =>
-                    <>
-                      <Title level={4}>
-                        <RestOutlined style={{fontSize: 20, marginRight: 8}}/>
-                        {group.amenity}
-                      </Title>
-                      <Row gutter={[16, 16]} tabIndex="map-items-list">
-                        {group.items.map(item => (
-                            <Col key={item.id} span={24} tabIndex="map-items-list">
-                              <MapItem item={item}/>
-                            </Col>
-                        ))
-                        }
-                      </Row>
-                      <Divider/>
-                    </>,
-                )}
+                  <List pagination={{ ...params.pagination, total, onChange: onPaginationChange }}>
+                      {!loading && data &&
+                          data?.pagedNodes?.nodes?.map(node =>
+                              <List.Item onClick={() => handleNodeClick(node.id)}
+                                         style={{width: "100%"}} key={node.id}>
+                                  <MapItem item={node}/>
+                              </List.Item>
+                          )
+                      }
+                  </List>
               </div>
             </Sider>
           <Layout>
@@ -99,8 +155,8 @@ export const Home: FC<IProps> = (): JSX.Element => {
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
-                <Routing/>
-                <LocationMarker/>
+                {/*<Routing/>*/}
+                  {selectedMapItem && !nodeIsLoading && <LocationMarker name={selectedMapItem.name} air={selectedMapItem.airQualityCategory} latlng={{lng: selectedMapItem.lng, lat: selectedMapItem.lat}}/>}
               </MapContainer>
             </div>
           </Layout>
@@ -132,32 +188,32 @@ const Routing = () => {
     return null;
 };
 
-function LocationMarker() {
-    const [position, setPosition] = useState(null);
+interface IMarkerProps{
+    name: string,
+    air: string
+    latlng: ILatlng,
+}
+
+function LocationMarker({ latlng, name, air }: { latlng: ILatlng, name: string, air: number }) {
+    console.log(latlng)
+    const [position, setPosition] = useState<ILatlng>();
     const [bbox, setBbox] = useState([]);
 
     const map = useMap();
 
     useEffect(() => {
         map.locate().on("locationfound", function (e) {
-            setPosition(e.latlng);
-            map.flyTo(e.latlng, map.getZoom());
-            const radius = e.accuracy;
-            const circle = L.circle(e.latlng, radius);
-            circle.addTo(map);
+            setPosition(latlng);
+            map.flyTo(latlng, map.getZoom());
             setBbox(e.bounds.toBBoxString().split(","));
         });
-    }, [map]);
+    }, [map, latlng]);
 
-    return position === null ? null : (
+    return !position ? null : (
         <Marker position={position}>
             <Popup>
-                You are here. <br/>
-                Map bbox: <br/>
-                <b>Southwest lng</b>: {bbox[0]} <br/>
-                <b>Southwest lat</b>: {bbox[1]} <br/>
-                <b>Northeast lng</b>: {bbox[2]} <br/>
-                <b>Northeast lat</b>: {bbox[3]}
+                <strong>{name}</strong><br/>
+                Air: {air} <br/>
             </Popup>
         </Marker>
     );
