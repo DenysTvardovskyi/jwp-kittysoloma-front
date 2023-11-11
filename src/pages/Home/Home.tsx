@@ -1,27 +1,27 @@
-import React, {FC, useEffect, useRef, useState} from "react";
-import {System as SystemLayout} from "../../layouts";
-import {useTranslation} from "react-i18next";
+import { FC, useEffect, useRef, useState } from "react";
+import { System as SystemLayout } from "../../layouts";
+import { useTranslation } from "react-i18next";
 import "leaflet/dist/leaflet.css";
-import {Button, Flex, FloatButton, Image, Input, Layout, List, Modal, Select, Tour} from "antd";
-import {constants} from "../../styles/constants";
-import {MapItem} from "./components/MapItem";
-import {MapContainer, Marker, Popup, TileLayer, useMap} from "react-leaflet";
+import { Button, Flex, FloatButton, Image, Input, Layout, List, Modal, Select, Tour } from "antd";
+import { constants } from "../../styles/constants";
+import { MapItem } from "./components/MapItem";
+import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
 import "leaflet-routing-machine/dist/leaflet-routing-machine.css";
 import "leaflet-routing-machine";
 import "leaflet-control-geocoder/dist/Control.Geocoder.css";
 import "leaflet-control-geocoder/dist/Control.Geocoder.js";
-import {AimOutlined} from "@ant-design/icons";
+import { AimOutlined } from "@ant-design/icons";
 //@ts-ignore
 import L from "leaflet";
 import Sider from "antd/es/layout/Sider";
 import Search from "antd/es/input/Search";
-import {usePanel} from "../../hooks/usePanel";
-import {PLACES} from "../../graphql/places";
-import {useLazyQuery} from "@apollo/client";
-import {NODE_BY_ID} from "../../graphql/nodeByID";
+import { usePanel } from "../../hooks/usePanel";
+import { PLACES } from "../../graphql/places";
+import { useLazyQuery } from "@apollo/client";
+import { NODE_BY_ID } from "../../graphql/nodeByID";
 import CheckableTag from "antd/es/tag/CheckableTag";
 import Title from "antd/es/typography/Title";
-import {PLACES_FILTERS} from "../../graphql/places_filters";
+import { PLACES_FILTERS } from "../../graphql/places_filters";
 
 interface IProps {
 }
@@ -46,13 +46,13 @@ export const Home: FC<IProps> = (): JSX.Element => {
 
   const { opened, setOpened } = usePanel();
 
-  const [selectedTag, setSelectedTag] = useState<string | null>();
+  const [ selectedTag, setSelectedTag ] = useState<string | null>();
 
-  const [response, setResponse] = useState()
+  const [ response, setResponse ] = useState();
   const [ total, setTotal ] = useState<number>(0);
   const [ search, setSearch ] = useState<string>("");
   const [ executeSearch, { data, loading } ] = useLazyQuery(PLACES);
-  const [ executeSearchWithFilters, { dataFilter, loadingFiltered } ] = useLazyQuery(PLACES_FILTERS);
+  const [ executeSearchWithFilters ] = useLazyQuery(PLACES_FILTERS);
   const [ userLatlon, setUserLatlon ] = useState(null);
   const [ end, setEnd ] = useState(null);
   const panelWidth = hasBreakPoint && !opened ? "100%" : "35%";
@@ -75,10 +75,10 @@ export const Home: FC<IProps> = (): JSX.Element => {
   const [ selectedMapItem, setSelectedMapItem ] = useState<INode>();
   const [ executeNodeData, { loading: nodeIsLoading } ] = useLazyQuery(NODE_BY_ID);
 
-  const handleNodeClick = (node: INode) => {
+  const handleNodeClick = (node: any) => {
     executeNodeData({ variables: { id: node.id } }).then(r => {
       const airQualityCategory = r.data.nodeById.airQualityCategory;
-      const name = node.tags.find(tag => tag.name === "name" || tag.name === "name:uk");
+      const name = node.tags.find((tag: any) => tag.name === "name" || tag.name === "name:uk");
       setEnd({
         lng: node.location.coordinates[0],
         lat: node.location.coordinates[1],
@@ -89,7 +89,7 @@ export const Home: FC<IProps> = (): JSX.Element => {
         airQualityCategory,
         lng: node.location.coordinates[0],
         lat: node.location.coordinates[1],
-        tags: node.tags
+        tags: node.tags,
       });
       if (hasBreakPoint) {
         //@ts-ignore
@@ -114,15 +114,15 @@ export const Home: FC<IProps> = (): JSX.Element => {
   }, [ userLatlon ]);
 
   const tags = [
-    {label: "wheelchair", value: "yes"},
-    {label: "toilets", value: "yes"},
-    {label: "toilets:wheelchair", value: "yes"},
-    {label: "lit", value: "yes"},
-    {label: "public_transport", value: "yes"},
-    {label: "amenity", value: "yes"},
-    {label: "tactile_paving", value: "yes"},
-    {label: "operator", value: "yes"},
-  ]
+    { label: "wheelchair", value: "yes" },
+    { label: "toilets", value: "yes" },
+    { label: "toilets:wheelchair", value: "yes" },
+    { label: "lit", value: "yes" },
+    { label: "public_transport", value: "yes" },
+    { label: "amenity", value: "yes" },
+    { label: "tactile_paving", value: "yes" },
+    { label: "operator", value: "yes" },
+  ];
 
   useEffect(() => {
     const variables = {
@@ -134,25 +134,25 @@ export const Home: FC<IProps> = (): JSX.Element => {
     const variablesWithFilters = {
       ...variables,
       filter: selectedTag,
-      filterValue: tags.find(tag => tag.label === selectedTag)?.value
+      filterValue: tags.find(tag => tag.label === selectedTag)?.value,
     };
-    console.log(variablesWithFilters)
-    if(selectedTag){
+    console.log(variablesWithFilters);
+    if (selectedTag) {
       executeSearchWithFilters({ variables: variablesWithFilters }).then((res) => {
         setTotal(res.data.pagedNodes.totalCount);
-        setResponse(undefined)
-        setResponse(res.data)
+        setResponse(undefined);
+        setResponse(res.data);
       });
     } else {
       executeSearch({ variables }).then((res) => {
         setTotal(res.data.pagedNodes.totalCount);
-        setResponse(undefined)
-        setResponse(res.data)
+        setResponse(undefined);
+        setResponse(res.data);
       });
     }
 
+  }, [ params, search, selectedTag ]);
 
-  }, [ params, search, selectedTag]);
   function getLocation() {
     if (navigator.geolocation) {
       navigator.permissions.query({ name: "geolocation" }).then(permissionStatus => {
@@ -244,7 +244,7 @@ export const Home: FC<IProps> = (): JSX.Element => {
             boxSizing: "border-box",
           }}
         >
-          <Title level={2} style={{marginBottom: 0}}>{t("home.search.title")}</Title>
+          <Title level={2} style={{ marginBottom: 0 }}>Пошук</Title>
           <Input
               placeholder="large size"
               style={{ marginTop: 24 }}
@@ -266,20 +266,20 @@ export const Home: FC<IProps> = (): JSX.Element => {
           }} level={5}>{t("home.search.filters")}</Title>
           <Flex gap={5} wrap={"wrap"} styles={{width: "100%"}}>
             {tags.map((tag) => (
-                <CheckableTag
-                    style={{border: "1px solid black", fontSize: 14}}
-                    key={tag.label}
-                    checked={selectedTag === tag.label}
-                    onClick={() => selectedTag === tag.label ? setSelectedTag(undefined) : setSelectedTag(tag.label)}
-                >
-                  {t(`accessible.${tag.label}`)}
-                </CheckableTag>
+              <CheckableTag
+                style={{ border: "1px solid black", fontSize: 14 }}
+                key={tag.label}
+                checked={selectedTag === tag.label}
+                onClick={() => selectedTag === tag.label ? setSelectedTag(undefined) : setSelectedTag(tag.label)}
+              >
+                {t(`accessible.${tag.label}`)}
+              </CheckableTag>
             ))}
           </Flex>
 
           <List>
             {!loading && data &&
-              response?.pagedNodes?.nodes?.map((node: any) =>
+              (response as any)?.pagedNodes?.nodes?.map((node: any) =>
                 <List.Item
                   onClick={() => handleNodeClick(node)}
                   style={{ width: "100%" }} key={node.id}
@@ -289,7 +289,7 @@ export const Home: FC<IProps> = (): JSX.Element => {
               )
             }
           </List>
-          {!loading && data && <div style={{paddingBottom: 20 }}>
+          {!loading && data && <div style={{ paddingBottom: 20 }}>
             <Button
               onClick={() => {
                 setParams({
@@ -297,7 +297,7 @@ export const Home: FC<IProps> = (): JSX.Element => {
                   pagination: { ...params.pagination, offset: data?.pagedNodes?.pageInfo?.startCursor },
                 });
               }} disabled={!data?.pagedNodes?.pageInfo?.hasPreviousPage}
-            >{t('pagination.previous')}</Button>
+            >{t("pagination.previous")}</Button>
             <Button
               onClick={() => {
                 setParams({
@@ -305,7 +305,7 @@ export const Home: FC<IProps> = (): JSX.Element => {
                   pagination: { ...params.pagination, offset: data?.pagedNodes?.pageInfo?.endCursor },
                 });
               }} disabled={!data?.pagedNodes?.pageInfo?.hasNextPage}
-            >{t('pagination.next')}</Button>
+            >{t("pagination.next")}</Button>
             <Select
               style={{ width: 150 }}
               onChange={(value) => {
@@ -369,15 +369,16 @@ L.Marker.prototype.options.icon = L.icon({
 
 const Routing = ({ start, end }: any) => {
   const map = useMap();
-
+  //@ts-ignore
   useEffect(() => {
     if (!map) {
       return;
     }
-
+    //@ts-ignore
     const routingControl = L.Routing.control({
       waypoints: [ start, end ],
       routeWhileDragging: false,
+      //@ts-ignore
       geocoder: L.Control.Geocoder.nominatim(),
     }).addTo(map);
 
@@ -417,7 +418,6 @@ function PlaceMarker({ latlng, name, air, tags }: { latlng: ILatlng, name: strin
 
   const map = useMap();
 
-
   useEffect(() => {
     map.locate().on("locationfound", function() {
       setPosition(latlng);
@@ -429,22 +429,21 @@ function PlaceMarker({ latlng, name, air, tags }: { latlng: ILatlng, name: strin
     <Marker position={position} style={{width: 200}}>
       <Popup>
         <Title level={4}>{name}</Title>
-        <Flex vertical gap={10} style={{marginTop: 12}}>
-          <div style={{display: "grid", gridTemplateColumns: "1fr 1fr" }}>
-            <span style={{textTransform: "capitalize"}}>Air</span>
-            <span style={{textTransform: "capitalize"}} >{air}</span>
+        <Flex vertical gap={10} style={{ marginTop: 12 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr" }}>
+            <span style={{ textTransform: "capitalize" }}>Air</span>
+            <span style={{ textTransform: "capitalize" }}>{air}</span>
           </div>
           {tags.filter((tag) => !tag.name.includes("name")).map((tag) => {
-              return (
-                  <div style={{display: "grid", gridTemplateColumns: "1fr 1fr" }} key={tag.name}>
-                    <span style={{textTransform: "capitalize"}}>{tag.name.split("_").join(" ")}</span>
-                    <span style={{overflow:"hidden", textOverflow: "ellipsis"}} >{tag.value}</span>
-                  </div>
-              )
-            })
+            return (
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr" }} key={tag.name}>
+                <span style={{ textTransform: "capitalize" }}>{tag.name.split("_").join(" ")}</span>
+                <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{tag.value}</span>
+              </div>
+            );
+          })
           }
         </Flex>
-
       </Popup>
     </Marker>
   );
