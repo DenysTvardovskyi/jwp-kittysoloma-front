@@ -14,22 +14,22 @@ interface IProps {}
 export const SignUp: FC<IProps> = (): JSX.Element => {
   const api = useApi();
   const { t } = useTranslation();
-  const { isAuthorized } = useAuthorization();
+  const { isAuthorized, setAuthorization } = useAuthorization();
 
   const onFinish = (values: any) => {
+    //@ts-ignore
     api.authorization.signUp({
       firstName: values.firstName,
       lastName: values.lastName,
       password: values.password,
       email: values.email,
       loader: t("loader.loader.title"),
-    }).then(() => {
-      console.log("sign up");
+    }).then(({user, accessToken }) => {
+      setAuthorization(accessToken, user)
     });
   };
 
   return !isAuthorized ? (
-    // return isAuthorized ? (
     <AuthLayout>
       <Flex vertical align={"center"} justify="center" style={{ height: "100vh" }} gap={14}>
         <Logo width={200} height={200} />

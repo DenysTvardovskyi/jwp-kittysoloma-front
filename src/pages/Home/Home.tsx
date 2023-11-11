@@ -290,7 +290,7 @@ export const Home: FC<IProps> = (): JSX.Element => {
               )
             }
           </List>
-          {!loading && data && <div style={{ paddingBottom: 20 }}>
+          {!loading && data && <div style={{ paddingBottom: 20, marginTop: 16 }}>
             <Button
               onClick={() => {
                 setParams({

@@ -4,7 +4,7 @@ import { useAuthorization } from "./useAuthorization";
 import { AxiosRequestHeaders } from "axios";
 import { IUser } from "../models";
 
-const API_URL: string = import.meta.env.VITE_BASE_URL!;
+const API_URL: string = "https://p2gzwutmec.eu-central-1.awsapprunner.com/api";
 
 interface IApiConfig {
   loader?: boolean | string;
@@ -29,7 +29,7 @@ interface IApiAccountGetConfig extends IApiConfig {}
 
 export interface IUseApi {
   authorization: {
-    signUp: (config: IApiAuthorizationSignUpConfig) => Promise<void>;
+    signUp: (config: IApiAuthorizationSignUpConfig) => Promise<{ accessToken: string, user: IUser }>;
     signIn: (config: IApiAuthorizationSignInConfig) => Promise<{ accessToken: string, user: IUser }>;
     signOut: (config: IApiAuthorizationSignOutConfig) => Promise<void>;
   };
@@ -65,8 +65,10 @@ export const useApi: TUseApi = (): IUseApi => {
           firstName: firstName,
           lastName: lastName,
           password: password,
+          latitude: 0,
+          longitude: 0
         };
-        return http.request<void>({
+        return http.request<{ accessToken: string, user: IUser }>({
           method: "POST",
           url: `${API_URL}/users/register`,
           headers,
@@ -84,6 +86,8 @@ export const useApi: TUseApi = (): IUseApi => {
           data: {
             password,
             email,
+            latitude: 0,
+            longitude: 0
           },
           loader: !!loader ? loader : false,
         })

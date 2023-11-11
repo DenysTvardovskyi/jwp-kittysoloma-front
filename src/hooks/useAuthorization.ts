@@ -36,7 +36,7 @@ export const useAuthorization: TUseAuthorization = () => {
   };
 
   return {
-    isAuthorized: true ,// isValid() && isActive(),
+    isAuthorized: !!accessToken.length ,// isValid() && isActive(),
     accessToken,
     user,
     setAuthorization,
