@@ -1,29 +1,29 @@
 import { FC } from "react";
-import { Card, Flex, Tag } from "antd";
+import { Card, Flex, Tag, Tooltip } from "antd";
 import Title from "antd/es/typography/Title";
 import AccessibleIcon from "@mui/icons-material/Accessible";
 import PlaceIcon from "@mui/icons-material/Place";
-import {FieldTimeOutlined} from "@ant-design/icons";
+import { FieldTimeOutlined } from "@ant-design/icons";
 
 interface IProps {
   item: any;
 }
 
-export const MapItem: FC<IProps> = ({item}: any): JSX.Element => {
+export const MapItem: FC<IProps> = ({ item }: any): JSX.Element => {
 
-    const name = item.tags.find(tag => tag.name === "name" || tag.name === "name:uk" || tag.name === "name:en")
-    const tagsForShow = item.tags.filter(tag =>
-        tag.name !== "name"
-        && tag.name !== "name:uk"
-        && tag.name !== "name:en"
-        && tag.name !== "name:ru"
-        && tag.name !== "opening_hours"
-        && tag.name !== "wheelchair"
-    )
-    const time = item.tags.find(tag => tag.name === "opening_hours")
-    const accessible = item.tags.find(tag => tag.name === "wheelchair")?.value === "yes"
+  const name = item.tags.find((tag: any) => tag.name === "name" || tag.name === "name:uk" || tag.name === "name:en");
+  const tagsForShow = item.tags.filter((tag: any) =>
+    tag.name !== "name"
+    && tag.name !== "name:uk"
+    && tag.name !== "name:en"
+    && tag.name !== "name:ru"
+    && tag.name !== "opening_hours"
+    && tag.name !== "wheelchair",
+  );
+  const time = item.tags.find((tag: any) => tag.name === "opening_hours");
+  const accessible = item.tags.find((tag: any) => tag.name === "wheelchair")?.value === "yes";
 
-    const wheelchairFriendly = accessible && <AccessibleIcon/>
+  const wheelchairFriendly = accessible && <AccessibleIcon />;
 
   return (
     <Card
@@ -35,13 +35,15 @@ export const MapItem: FC<IProps> = ({item}: any): JSX.Element => {
       style={{ cursor: "pointer", width: "100%" }}
     >
       <Title style={{ margin: 0 }} level={3}>{wheelchairFriendly} {name.value}</Title>
-            <Title level={5} style={{marginTop: 4, fontWeight: "normal"}}>
-        {time && <><FieldTimeOutlined /> {time.value}</>  }
+      <Title level={5} style={{ marginTop: 4, fontWeight: "normal" }}>
+        {time && <><FieldTimeOutlined /> {time.value}</>}
 
-            </Title>
+      </Title>
 
-            <Flex gap={5} wrap={"wrap"}>
-        {tagsForShow.map(tag => <Tag >{tag.value}</Tag>)}
+      <Flex gap={5} wrap={"wrap"}>
+        {tagsForShow.map((tag: any) => <Tooltip
+          title={`${tag.name.split("_").join(" ")} : ${tag.value}`}
+        ><Tag style={{ textOverflow: "ellipsis", overflow: "hidden" }}>{tag.value}</Tag></Tooltip>)}
       </Flex>
     </Card>
   );
