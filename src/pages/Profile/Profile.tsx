@@ -4,29 +4,18 @@ import { useAuthorization, useNotification } from "../../hooks";
 import { useNavigate } from "react-router-dom";
 import Title from "antd/es/typography/Title";
 import Text from "antd/es/typography/Text";
-import { Button, Card, Col, Divider, Flex, Form, Input, Row, Upload, UploadProps } from "antd";
-import { RestOutlined } from "@ant-design/icons";
-import { constants } from "../../styles/constants";
+import { Button, Card, Flex, Form, Input, Upload, UploadProps } from "antd";
 import { useTranslation } from "react-i18next";
 import { UploadOutlined } from "@mui/icons-material";
-import { mock } from "../Home/mock";
-import { MapItem } from "../Home/components/MapItem";
-import useBreakpoint from "antd/es/grid/hooks/useBreakpoint";
 
 interface IProps {
 }
-
-const groups = [
-  { amenity: "something", items: [ mock[0], mock[1], mock[2], mock[3], mock[4], mock[5] ] },
-  { amenity: "something-else", items: [ mock[6], mock[7], mock[8], mock[9], mock[10], mock[11] ] },
-];
 
 export const Profile: FC<IProps> = (): JSX.Element => {
   const { user, isAuthorized } = useAuthorization();
   const { t } = useTranslation();
   const navigate = useNavigate();
   const notification = useNotification();
-  const hasBreakpoint = useBreakpoint().lg;
 
   const props: UploadProps = {
     name: "file",
@@ -52,11 +41,10 @@ export const Profile: FC<IProps> = (): JSX.Element => {
     }
   }, [ isAuthorized, user ]);
 
-  const size = !hasBreakpoint ? 24 : 12;
 
   return (
     <LandingLayout>
-      <Flex vertical align={"center"} style={{ width: "100%" }}>
+      <Flex justify={"center"} align={"center"} style={{ width: "100%", minHeight: "calc(100vh - 64px)" }}>
         <Form
           style={{ width: "50%", minWidth: 300, maxWidth: 600 }}
           initialValues={user}
@@ -84,10 +72,10 @@ export const Profile: FC<IProps> = (): JSX.Element => {
             </Upload>
           </Card>
           <Form.Item name="firstName">
-            <Input placeholder={t("account.firstName")} />
+            <Input disabled placeholder={t("account.firstName")} />
           </Form.Item>
           <Form.Item name="lastName">
-            <Input placeholder={t("account.lastName")} />
+            <Input disabled placeholder={t("account.lastName")} />
           </Form.Item>
           <Form.Item
             name="email"
@@ -96,46 +84,9 @@ export const Profile: FC<IProps> = (): JSX.Element => {
               { required: true, message: t("signIn.email.validation.required") },
             ]}
           >
-            <Input placeholder={t("signIn.email.title")} />
-          </Form.Item>
-
-          <Form.Item>
-            <Flex gap="small" align="center" style={{ width: "100%" }}>
-              <Button
-                style={{ background: constants.black, width: "100%" }} type="primary"
-                htmlType="submit"
-                className="login-form-button"
-              >
-                {t("account.save")}
-              </Button>
-            </Flex>
+            <Input disabled placeholder={t("signIn.email.title")} />
           </Form.Item>
         </Form>
-        <Title>{t("account.favorites")}</Title>
-        <div
-          style={{
-            padding: "0 16px",
-            background: constants.light,
-          }}
-        >
-          {groups.map(group =>
-            <>
-              <Title level={4}>
-                <RestOutlined style={{ fontSize: 20, marginRight: 8 }} />
-                {group.amenity}
-              </Title>
-              <Row gutter={[ 16, 16 ]}>
-                {group.items.map(item => (
-                  <Col key={item.id} span={size}>
-                    <MapItem item={item} />
-                  </Col>
-                ))
-                }
-              </Row>
-              <Divider />
-            </>,
-          )}
-        </div>
       </Flex>
 
     </LandingLayout>
