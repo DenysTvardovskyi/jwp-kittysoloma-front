@@ -1,5 +1,14 @@
 {
   "translation": {
+    "tour": {
+      "welcome": "Ласкаво просимо до JWP карт",
+      "description": "Давайте швидко озирнемося",
+      "map": "Карта",
+      "mapDescription": "Тут ви можете побачити маршрути та місця на карті",
+      "location": "Ваша локація",
+      "locationDescription": "Натисніть тут, щоб отримати ваше поточне місцезнаходження",
+      "sidebar": "Тут можна знайти конкретне місце."
+    },
     "header": {
       "navigation": {
         "signIn": "Авторизація",
@@ -26,8 +35,14 @@
     },
     "home": {
       "search": {
+        "title": "Пошук",
+        "results": "Результати",
+        "filters": "Фільтри",
         "placeholder": "Шукати в місті Київ",
         "button": "Знайти"
+      },
+      "location": {
+        "placeholder": "Ваше місцезнаходження"
       }
     },
     "account": {

@@ -172,23 +172,23 @@ export const Home: FC<IProps> = (): JSX.Element => {
 
   const steps: any = [
     {
-      title: "Welcome to MAP",
-      description: "Let's have a quick look around.",
+      title: t("tour.welcome"),
+      description: t("tour.description"),
     },
     {
-      title: "Map",
-      description: "Here you can see routes and places on the map",
+      title: t("tour.map"),
+      description: t("tour.mapDescription"),
       target: () => ref1.current,
     },
     {
-      title: "Current location",
-      description: "Click here to get your current location",
+      title: t("tour.location"),
+      description: t("tour.locationDescription"),
       target: () => ref2.current,
     },
     {
-      title: "Sidebar",
+      title: t("tour.sidebar"),
       placement: "right",
-      description: "Here you can find a specific place.",
+      description: t("tour.sidebarDescription"),
       target: () => ref3.current,
     },
   ];
@@ -216,6 +216,7 @@ export const Home: FC<IProps> = (): JSX.Element => {
         <Image
           width="100%"
           src="./location.jpg"
+          alt={"location"}
         />
         <p>Allow location for full experience</p>
       </Modal>
@@ -243,13 +244,13 @@ export const Home: FC<IProps> = (): JSX.Element => {
             boxSizing: "border-box",
           }}
         >
-          <Title level={2} style={{marginBottom: 0}}>Пошук</Title>
+          <Title level={2} style={{marginBottom: 0}}>{t("home.search.title")}</Title>
           <Input
               placeholder="large size"
               style={{ marginTop: 24 }}
               prefix={<AimOutlined />}
               disabled={true}
-              value={"Your location"}
+              value={t("home.location.placeholder")}
           />
           <Search
             placeholder={t("home.search.placeholder")}
@@ -258,11 +259,11 @@ export const Home: FC<IProps> = (): JSX.Element => {
             onSearch={handleSearch}
             style={{ margin: "24px 0" }}
           />
-          <span>Results: {total}</span>
+          <span>{t("home.search.results")}: {total}</span>
           <Title
               style={{
             marginTop: 10,
-          }} level={5}>Фільтри</Title>
+          }} level={5}>{t("home.search.filters")}</Title>
           <Flex gap={5} wrap={"wrap"} styles={{width: "100%"}}>
             {tags.map((tag) => (
                 <CheckableTag
@@ -425,7 +426,7 @@ function PlaceMarker({ latlng, name, air, tags }: { latlng: ILatlng, name: strin
   }, []);
 
   return !position ? null : (
-    <Marker position={position}>
+    <Marker position={position} style={{width: 200}}>
       <Popup>
         <Title level={4}>{name}</Title>
         <Flex vertical gap={10} style={{marginTop: 12}}>

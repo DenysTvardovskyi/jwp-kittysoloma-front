@@ -1,5 +1,16 @@
 {
   "translation": {
+    "tour": {
+      "welcome": "Welcome to JWP MAP",
+      "description": "Let's have a quick look around",
+      "map": "Map",
+      "mapDescription": "Here you can see routes and places on the map",
+      "location": "Current location",
+      "locationDescription": "Click here to get your current location",
+      "sidebar": "Sidebar",
+      "sidebarDescription": "Here you can find a specific place."
+
+    },
     "header": {
       "navigation": {
         "signIn": "Log In",
@@ -26,8 +37,14 @@
     },
     "home": {
       "search": {
+        "title": "Search",
+        "results": "Results",
+        "filters": "Filters",
         "placeholder": "Find places in Kyiv city",
         "button": "Find"
+      },
+      "location": {
+        "placeholder": "Your location"
       }
     },
     "account": {
