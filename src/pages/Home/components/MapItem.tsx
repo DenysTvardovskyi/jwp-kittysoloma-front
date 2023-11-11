@@ -1,12 +1,12 @@
-import React, { FC } from 'react'
-import { Card, Flex, Space, Tag } from 'antd'
-import Title from 'antd/es/typography/Title'
-import AccessibleIcon from '@mui/icons-material/Accessible';
-import PlaceIcon from '@mui/icons-material/Place';
+import { FC } from "react";
+import { Card, Flex, Tag } from "antd";
+import Title from "antd/es/typography/Title";
+import AccessibleIcon from "@mui/icons-material/Accessible";
+import PlaceIcon from "@mui/icons-material/Place";
 import {FieldTimeOutlined} from "@ant-design/icons";
 
 interface IProps {
-    item: any
+  item: any;
 }
 
 export const MapItem: FC<IProps> = ({item}: any): JSX.Element => {
@@ -25,23 +25,24 @@ export const MapItem: FC<IProps> = ({item}: any): JSX.Element => {
 
     const wheelchairFriendly = accessible && <AccessibleIcon/>
 
-    return (
-        <Card tabIndex={item.id}
-              actions={[
-                  <PlaceIcon />
-              ]}
-              onClick={() => console.log(`navigate to ${item.lon}, ${item.lat}`)}
-              style={{cursor: "pointer", width: "100%"}}
-        >
-            <Title style={{margin: 0}} level={3}>{wheelchairFriendly} {name.value}</Title>
+  return (
+    <Card
+      tabIndex={item.id}
+      actions={[
+        <PlaceIcon />,
+      ]}
+      onClick={() => console.log(`navigate to ${item.lon}, ${item.lat}`)}
+      style={{ cursor: "pointer", width: "100%" }}
+    >
+      <Title style={{ margin: 0 }} level={3}>{wheelchairFriendly} {name.value}</Title>
             <Title level={5} style={{marginTop: 4, fontWeight: "normal"}}>
-                {time && <><FieldTimeOutlined /> {time.value}</>  }
+        {time && <><FieldTimeOutlined /> {time.value}</>  }
 
             </Title>
 
             <Flex gap={5} wrap={"wrap"}>
-                {tagsForShow.map(tag => <Tag >{tag.value}</Tag>)}
-            </Flex>
-        </Card>
-    )
-}
+        {tagsForShow.map(tag => <Tag >{tag.value}</Tag>)}
+      </Flex>
+    </Card>
+  );
+};

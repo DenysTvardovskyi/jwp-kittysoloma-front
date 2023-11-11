@@ -1,8 +1,7 @@
 import { FC } from "react";
 import { Link } from "react-router-dom";
 import i18n from "i18next";
-import { Flex, Select } from "antd";
-import { useTranslation } from "react-i18next";
+import { Select } from "antd";
 
 interface IProps {}
 
@@ -12,7 +11,6 @@ const LANGUAGES: any = {
 };
 
 export const Header: FC<IProps> = (): JSX.Element => {
-  const { t } = useTranslation();
 
   const langOptions: { value: string, label: string }[] = Object.keys(LANGUAGES)
     .map((lng) => ({ value: lng, label: LANGUAGES[lng].nativeName }));

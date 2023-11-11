@@ -7,5 +7,5 @@ export interface IPanelContext {
 
 export const PanelContext = React.createContext<IPanelContext>({
     opened: false,
-    setOpened: (value: boolean) => {}
+    setOpened: () => {}
 });

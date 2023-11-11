@@ -1,14 +1,13 @@
 import { FC } from "react";
 import { Link } from "react-router-dom";
 import { useApi, useAuthorization } from "../../hooks";
-import { System as SystemLayout } from "../../layouts";
-import {Button, Checkbox, Flex, Form, Input} from "antd";
+import { Button, Flex, Form, Input } from "antd";
 import Title from "antd/es/typography/Title";
 import { LockOutlined, MailOutlined, UserOutlined } from "@ant-design/icons";
 import { useTranslation } from "react-i18next";
-import {AuthLayout} from "../../layouts/AuthLayout";
-import {Logo} from "../../components/Logo";
-import {constants} from "../../styles/constants";
+import { AuthLayout } from "../../layouts/AuthLayout";
+import { Logo } from "../../components/Logo";
+import { constants } from "../../styles/constants";
 
 interface IProps {}
 
@@ -20,7 +19,7 @@ export const SignUp: FC<IProps> = (): JSX.Element => {
   const onFinish = (values: any) => {
     api.authorization.signUp({
       firstName: values.firstName,
-      lastName:  values.lastName,
+      lastName: values.lastName,
       password: values.password,
       email: values.email,
       loader: t("loader.loader.title"),
@@ -30,11 +29,11 @@ export const SignUp: FC<IProps> = (): JSX.Element => {
   };
 
   return !isAuthorized ? (
-  // return isAuthorized ? (
+    // return isAuthorized ? (
     <AuthLayout>
-      <Flex vertical align={"center"} justify="center" style={{height: "100vh"}} gap={14}>
-      <Logo width={200} height={200}/>
-      <Title level={3}>{t("header.navigation.signUp")}</Title>
+      <Flex vertical align={"center"} justify="center" style={{ height: "100vh" }} gap={14}>
+        <Logo width={200} height={200} />
+        <Title level={3}>{t("header.navigation.signUp")}</Title>
         <Form
           name="register"
           initialValues={{ remember: true }}
@@ -42,10 +41,13 @@ export const SignUp: FC<IProps> = (): JSX.Element => {
           autoComplete="off"
         >
           <Form.Item
-              name="firstName"
-              rules={[ { required: true, message: t("signUp.firstName.validation.required"), whitespace: true } ]}
+            name="firstName"
+            rules={[ { required: true, message: t("signUp.firstName.validation.required"), whitespace: true } ]}
           >
-            <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder={t("signUp.firstName.title")} />
+            <Input
+              prefix={<UserOutlined className="site-form-item-icon" />}
+              placeholder={t("signUp.firstName.title")}
+            />
           </Form.Item>
           <Form.Item
             name="lastName"
@@ -96,7 +98,7 @@ export const SignUp: FC<IProps> = (): JSX.Element => {
           </Form.Item>
 
           <Form.Item>
-            <Button style={{width: "100%", background: constants.black}} type="primary" htmlType="submit">
+            <Button style={{ width: "100%", background: constants.black }} type="primary" htmlType="submit">
               {t("signUp.navigation.register")}
             </Button>
           </Form.Item>
@@ -105,9 +107,9 @@ export const SignUp: FC<IProps> = (): JSX.Element => {
     </AuthLayout>
   ) : (
     <AuthLayout>
-      <Flex vertical align={"center"} justify="center" style={{height: "100vh"}} gap={14}>
+      <Flex vertical align={"center"} justify="center" style={{ height: "100vh" }} gap={14}>
         <Title>{t("signUp.authorized.title")}</Title>
-        <Button style={{background: constants.black, color: constants.white}}>
+        <Button style={{ background: constants.black, color: constants.white }}>
           <Link to="/">{t("signUp.authorized.goHome")}</Link>
         </Button>
       </Flex>
