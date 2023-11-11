@@ -7,8 +7,28 @@
         "backHome": "Back home"
       }
     },
+    "accessible": {
+      "wheelchair": "Wheelchair",
+      "toilets": "Toilets",
+      "lit": "Lit",
+      "opening_hours": "Opening Hours",
+      "toilets:wheelchair": "Toilets: Wheelchair",
+      "public_transport": "Public Transport",
+      "amenity": "Amenity",
+      "leisure": "Leisure",
+      "tactile_paving": "Tactile Paving",
+      "operator": "Operator"
+    },
+    "pagination": {
+      "next": "Next",
+      "previous": "Previous",
+      "label": "page"
+    },
     "home": {
-      "title": "Hello World!"
+      "search": {
+        "placeholder": "Find places in Kyiv city",
+        "button": "Find"
+      }
     },
     "account": {
       "title": "Profile information",

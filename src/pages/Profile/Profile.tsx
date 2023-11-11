@@ -1,4 +1,4 @@
-import React, {FC, useEffect} from "react";
+import React, {FC} from "react";
 import {Landing as LandingLayout} from "../../layouts";
 import {useAuthorization} from "../../hooks";
 import {Link, useNavigate} from "react-router-dom";
@@ -12,9 +12,6 @@ import {UploadOutlined} from "@mui/icons-material";
 import {mock} from "../Home/mock";
 import {MapItem} from "../Home/components/MapItem";
 import useBreakpoint from "antd/es/grid/hooks/useBreakpoint";
-
-interface IProps {
-}
 
 const props: UploadProps = {
     name: 'file',
@@ -38,6 +35,9 @@ const groups = [
     {amenity: "something", items: [mock[0], mock[1], mock[2], mock[3], mock[4], mock[5]]},
     {amenity: "something-else", items: [mock[6], mock[7], mock[8], mock[9], mock[10], mock[11]]},
 ];
+
+interface IProps {
+}
 
 export const Profile: FC<IProps> = (): JSX.Element => {
     const {user, isAuthorized} = useAuthorization()

@@ -7,8 +7,28 @@
         "backHome": "Назад"
       }
     },
+    "accessible": {
+      "wheelchair": "Коляска",
+      "toilets": "Туалети",
+      "lit": "Підсвічено",
+      "opening_hours": "Вказано години Роботи",
+      "toilets:wheelchair": "Туалети: Коляска",
+      "public_transport": "Громадський Транспорт",
+      "amenity": "Зручності",
+      "leisure": "Відпочинок",
+      "tactile_paving": "Дотикове Покриття",
+      "operator": "Оператор"
+    },
+    "pagination": {
+      "next": "Наступна",
+      "previous": "Попередня",
+      "label": "на сторінку"
+    },
     "home": {
-      "title": "Привіт світ!"
+      "search": {
+        "placeholder": "Шукати в місті Київ",
+        "button": "Знайти"
+      }
     },
     "account": {
       "title": "Інформація профілю",

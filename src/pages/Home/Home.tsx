@@ -1,14 +1,11 @@
-import React, { FC, useContext, useEffect, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { System as SystemLayout } from "../../layouts";
 import { useTranslation } from "react-i18next";
 import "leaflet/dist/leaflet.css";
-import { mock } from "./mock";
-import { Button, Col, Divider, Flex, Layout, List, Row, Select } from "antd";
+import {Button, Checkbox, Flex, Layout, List, Select} from "antd";
 import { constants } from "../../styles/constants";
 import { MapItem } from "./components/MapItem";
 import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
-import Title from "antd/es/typography/Title";
-import { LoadingOutlined } from "@ant-design/icons";
 import "leaflet-routing-machine/dist/leaflet-routing-machine.css";
 import "leaflet-routing-machine";
 import "leaflet-control-geocoder/dist/Control.Geocoder.css";
@@ -21,6 +18,9 @@ import { usePanel } from "../../hooks/usePanel";
 import { PLACES } from "../../graphql/places";
 import { useLazyQuery } from "@apollo/client";
 import { NODE_BY_ID } from "../../graphql/nodeByID";
+import CheckableTag from "antd/es/tag/CheckableTag";
+import Title from "antd/es/typography/Title";
+import {PLACES_FILTERS} from "../../graphql/places_filters";
 
 interface IProps {
 }
@@ -43,9 +43,13 @@ export const Home: FC<IProps> = (): JSX.Element => {
 
   const { opened, setOpened } = usePanel();
 
+  const [selectedTag, setSelectedTag] = useState<string>();
+
+  const [response, setResponse] = useState()
   const [ total, setTotal ] = useState<number>();
   const [ search, setSearch ] = useState<string>("");
   const [ executeSearch, { data, loading } ] = useLazyQuery(PLACES);
+  const [ executeSearchWithFilters, { dataFilter, loadingFiltered } ] = useLazyQuery(PLACES_FILTERS);
   const [ params, setParams ] = useState<any>({
     pagination: {
       pageSize: 10,
@@ -56,13 +60,13 @@ export const Home: FC<IProps> = (): JSX.Element => {
   const [ selectedMapItem, setSelectedMapItem ] = useState<INode>();
   const [ executeNodeData, { loading: nodeIsLoading } ] = useLazyQuery(NODE_BY_ID);
 
-  const handleNodeClick = (id: number) => {
-    executeNodeData({ variables: { id } }).then(r => {
-      const node = r.data.nodeById;
+  const handleNodeClick = (node: INode) => {
+    executeNodeData({ variables: { id: node.id } }).then(r => {
+      const airQualityCategory = r.data.nodeById.airQualityCategory;
       const name = node.tags.find(tag => tag.name === "name" || tag.name === "name:uk");
       setSelectedMapItem({
         name: name.value,
-        airQualityCategory: node.airQualityCategory,
+        airQualityCategory,
         lng: node.location.coordinates[0],
         lat: node.location.coordinates[1],
       });
@@ -73,6 +77,17 @@ export const Home: FC<IProps> = (): JSX.Element => {
 
   };
 
+  const tags = [
+    {label: "wheelchair", value: "yes"},
+    {label: "toilets", value: "yes"},
+    {label: "toilets:wheelchair", value: "yes"},
+    {label: "lit", value: "yes"},
+    {label: "public_transport", value: "yes"},
+    {label: "amenity", value: "yes"},
+    {label: "tactile_paving", value: "yes"},
+    {label: "operator", value: "yes"},
+  ]
+
   useEffect(() => {
     const variables = {
       search,
@@ -80,10 +95,28 @@ export const Home: FC<IProps> = (): JSX.Element => {
       offset: params.pagination.offset,
     };
 
-    executeSearch({ variables }).then((res) => {
-      setTotal(res.data.pagedNodes.totalCount);
-    });
-  }, [ params, search ]);
+    const variablesWithFilters = {
+      ...variables,
+      filter: selectedTag,
+      filterValue: tags.find(tag => tag.label === selectedTag)?.value
+    };
+    console.log(variablesWithFilters)
+    if(selectedTag){
+      executeSearchWithFilters({ variables: variablesWithFilters }).then((res) => {
+        setTotal(res.data.pagedNodes.totalCount);
+        setResponse(undefined)
+        setResponse(res.data)
+      });
+    } else {
+      executeSearch({ variables }).then((res) => {
+        setTotal(res.data.pagedNodes.totalCount);
+        setResponse(undefined)
+        setResponse(res.data)
+      });
+    }
+
+
+  }, [ params, search, selectedTag]);
 
   const handleSearch = (v: string) => {
     setSearch(v);
@@ -117,21 +150,38 @@ export const Home: FC<IProps> = (): JSX.Element => {
             boxSizing: "border-box",
           }}
         >
+          <Title level={2} style={{marginBottom: 0}}>Пошук</Title>
           <Search
-            placeholder="input search text"
+            placeholder={t("home.search.placeholder")}
             allowClear
-            enterButton="Search"
+            enterButton={t("home.search.button")}
             onSearch={handleSearch}
             style={{
               marginTop: 24,
-              marginBottom: 24,
             }}
           />
+          <Title
+              style={{
+            marginTop: 10,
+          }} level={5}>Фільтри</Title>
+          <Flex gap={5} wrap={"wrap"} styles={{width: "100%"}}>
+            {tags.map((tag) => (
+                <CheckableTag
+                    style={{border: "1px solid black", fontSize: 14}}
+                    key={tag.label}
+                    checked={selectedTag === tag.label}
+                    onClick={() => selectedTag === tag.label ? setSelectedTag(undefined) : setSelectedTag(tag.label)}
+                >
+                  {t(`accessible.${tag.label}`)}
+                </CheckableTag>
+            ))}
+          </Flex>
+
           <List>
             {!loading && data &&
-              data?.pagedNodes?.nodes?.map(node =>
+              response?.pagedNodes?.nodes?.map(node =>
                 <List.Item
-                  onClick={() => handleNodeClick(node.id)}
+                  onClick={() => handleNodeClick(node)}
                   style={{ width: "100%" }} key={node.id}
                 >
                   <MapItem item={node} />
@@ -139,7 +189,7 @@ export const Home: FC<IProps> = (): JSX.Element => {
               )
             }
           </List>
-          {!loading && data && <div>
+          {!loading && data && <div style={{paddingBottom: 20 }}>
             <Button
               onClick={() => {
                 setParams({
@@ -147,7 +197,7 @@ export const Home: FC<IProps> = (): JSX.Element => {
                   pagination: { ...params.pagination, offset: data?.pagedNodes?.pageInfo?.startCursor },
                 });
               }} disabled={!data?.pagedNodes?.pageInfo?.hasPreviousPage}
-            >Previous</Button>
+            >{t('pagination.previous')}</Button>
             <Button
               onClick={() => {
                 setParams({
@@ -155,18 +205,18 @@ export const Home: FC<IProps> = (): JSX.Element => {
                   pagination: { ...params.pagination, offset: data?.pagedNodes?.pageInfo?.endCursor },
                 });
               }} disabled={!data?.pagedNodes?.pageInfo?.hasNextPage}
-            >Next</Button>
+            >{t('pagination.next')}</Button>
             <Select
-              style={{ width: 120 }}
+              style={{ width: 150 }}
               onChange={(value, option) => {
                 setParams({ ...params, pagination: { pageSize: +value, offset: null } });
               }}
               value={params.pagination.pageSize}
               options={[
-                { value: "10", label: "10 / page" },
-                { value: "20", label: "20 / page" },
-                { value: "50", label: "50 / page" },
-                { value: "100", label: "100 / page" },
+                { value: "10", label: `10 / ${t("pagination.label")}` },
+                { value: "20", label: `20 / ${t("pagination.label")}` },
+                { value: "50", label: `50 / ${t("pagination.label")}` },
+                { value: "100", label: `100 / ${t("pagination.label")}` },
               ] as any}
             />
           </div>}
@@ -222,14 +272,7 @@ const Routing = () => {
   return null;
 };
 
-interface IMarkerProps {
-  name: string,
-  air: string
-  latlng: ILatlng,
-}
-
-function LocationMarker({ latlng, name, air }: { latlng: ILatlng, name: string, air: number }) {
-  console.log(latlng);
+function LocationMarker({ latlng, name, air }: { latlng: ILatlng, name: string, air: string }) {
   const [ position, setPosition ] = useState<ILatlng>();
   const [ bbox, setBbox ] = useState([]);
 

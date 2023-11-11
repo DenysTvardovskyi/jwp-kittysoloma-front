@@ -1,7 +1,7 @@
 import {gql} from "@apollo/client";
 
-export const PLACES = gql`
-  query nodesAll($search: String!, $pageSize: Int, $offset: String ) {
+export const PLACES_FILTERS = gql`
+  query nodesAll($search: String!, $filter: String, $filterValue: String, $pageSize: Int, $offset: String ) {
   pagedNodes(
     after: $offset
     first: $pageSize
@@ -9,7 +9,12 @@ export const PLACES = gql`
       tags: {
         any: true
       }
-       or: [
+       and: [
+        {
+          tags: {
+            some: {name: {eq: $filter}, value: {contains: $filterValue}}
+          }
+        }
         {
           tags: {
             some: { name: { eq: "name" }, value: { contains: $search } }
@@ -23,6 +28,11 @@ export const PLACES = gql`
         {
           tags: {
             some: { name: { eq: "name:en" }, value: { contains: $search } }
+          }
+        }
+        {
+          tags: {
+            some: { name: { eq: "name" }, value: { contains: $search } }
           }
         }
       ]
@@ -47,4 +57,4 @@ export const PLACES = gql`
     }
   }
 }
-`;
+`
