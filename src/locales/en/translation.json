@@ -15,7 +15,8 @@
       "description": "Add or modify you personal information",
       "firstName:": "First name",
       "lastName": "Last name",
-      "save": "Save changes"
+      "save": "Save changes",
+      "favorites": "Favorite spots"
     },
     "signIn": {
       "email": {
